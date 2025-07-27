@@ -1,4 +1,5 @@
 # Azure Private File Share with P2S VPN - Deployment Guide
+<img width="673" height="302" alt="image" src="https://github.com/user-attachments/assets/057e3558-5c9a-49f0-bc60-aa7499ae4596" />
 
 This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection with Terraform. The setup includes a storage account with private endpoint, and Point-to-Site VPN access.
 
