@@ -1,2 +1,160 @@
-# azure-private-fileshare-P2S-VPN
-Azure File Share private connection with P2S VPN - Deployment Guide
+# Azure Private File Share with P2S VPN - Deployment Guide
+
+This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection with Terraform. The setup includes a storage account with private endpoint, and Point-to-Site VPN access.
+
+## Prerequisites
+
+1. **Azure CLI** installed and authenticated (`az login`)
+2. **Terraform** installed (version 1.5.5+)
+3. **PowerShell** (Windows) for certificate generation
+4. **Azure subscription** with appropriate permissions
+   
+<img width="1319" height="518" alt="image" src="https://github.com/user-attachments/assets/d53d4cf6-ec9d-4e1a-b09c-66fbc9c4a484" />
+
+## Step-by-Step Deployment
+
+### 1. Prepare the Terraform Files
+
+Create a new directory and save all the Terraform files:
+```bash
+mkdir azure-private-fileshare
+cd azure-private-fileshare
+```
+
+Save the provided files:
+- `main.tf` (main Terraform configuration)
+- `terraform.tfvars` (variables configuration)
+
+### 2. Configure Variables
+
+Edit `terraform.tfvars` file:
+
+```hcl
+resource_group_name = "rg-filestorage"
+location           = "Central US"
+
+# IMPORTANT: Change this to something globally unique!
+storage_account_name = "mystorageaccount20250727"
+
+file_share_name = "myfileshare"
+vpn_client_address_space = ["172.16.0.0/24"]
+
+```
+
+### 3. Deploy Infrastructure
+
+Initialize and deploy with Terraform:
+
+```bash
+terraform init
+
+terraform plan
+
+terraform apply
+```
+
+**Note**: The VPN Gateway creation takes 20-45 minutes. Storage account will have private endpoint created.
+
+### 4. Verify Private Endpoints
+
+After deployment, both services will be accessible only through private endpoints:
+
+```bash
+# Check outputs
+terraform output
+
+# You should see private IPs for storage account
+terraform output storage_account_private_endpoint_ip
+
+**Note**: The VPN Gateway creation takes 20-45 minutes. Be patient!
+
+### 5. Download VPN Client Configuration
+
+After deployment completes:
+
+1. Go to Azure Portal
+2. Navigate to your VPN Gateway: `vpn-gateway`
+3. Go to **Point-to-site configuration**
+4. Click **Download VPN client from Microsoft Store**
+5. Extract the ZIP file
+6. Import config file to your azure vpn
+
+```
+<img width="464" height="268" alt="image" src="https://github.com/user-attachments/assets/94901f74-e975-4774-94e4-a36c5bafa435" />
+
+<img width="461" height="216" alt="image" src="https://github.com/user-attachments/assets/af2ecdfc-f969-4ba5-aaef-e459aff1375d" />
+
+```
+### 6. Connect and Test
+
+1. **Connect to VPN**: Use the installed VPN client to connect
+2. **Verify connection**: Check that you're connected to the `172.16.0.x` address space
+3. **Test DNS resolution**:
+   ```cmd
+   nslookup yourstorageaccount.privatelink.file.core.windows.net
+   Should resolve to a `10.0.1.x` address (private endpoint IP)
+   ```
+<img width="1911" height="616" alt="image" src="https://github.com/user-attachments/assets/ca769216-dbe4-4da3-b73c-feed6e492fe1" />
+
+<img width="306" height="176" alt="image" src="https://github.com/user-attachments/assets/144e0919-12f1-497a-a785-751374849c59" />
+
+### 7. Mount File Share
+
+Once connected to VPN, mount the file share:
+
+**Command Line:**
+```cmd
+# Get the storage account key from terraform output
+terraform output -raw storage_account_key
+
+# Mount the drive (replace with your storage account name and key)
+net use Z: \\yourstorageaccount.privatelink.file.core.windows.net\myfileshare /user:Azure\yourstorageaccount YOUR_STORAGE_KEY /persistent:yes
+```
+<img width="2384" height="196" alt="image" src="https://github.com/user-attachments/assets/381ec4e2-d738-42e0-9dbb-4b75c294d403" />
+
+## Verification Steps
+
+1. **Check VPN Connection**: Verify you have a 172.16.0.x IP address
+2. **DNS Resolution**: Ensure storage account resolves to private IP (10.0.1.x)
+3. **File Access**: Create/read files on the Z: drive
+4. **Network Traffic**: Confirm traffic goes through private endpoint (not internet)
+   
+<img width="8322" height="496" alt="image" src="https://github.com/user-attachments/assets/95cd0ff3-cdf6-42eb-8a0b-d43c30366f56" />
+
+## Troubleshooting
+
+### Common Issues:
+
+1. **Storage account name not unique**: Change `storage_account_name` in tfvars
+2. **Can't access file share**: Verify VPN connection and DNS resolution
+3. **Permission denied**: Check storage account access key is correct
+
+### Useful Commands:
+
+```bash
+# Check Terraform outputs
+terraform output
+
+# Get storage account key
+terraform output -raw storage_account_key
+
+# Destroy infrastructure (when done testing)
+terraform destroy
+```
+
+## Security Notes
+
+-  Storage account has public access disabled
+-  All traffic goes through private endpoint
+-  VPN connection is certificate-authenticated
+-  DNS resolves to private IP addresses
+-  No internet exposure of file share
+
+## Cost Considerations
+
+- **VPN Gateway**: ~$150-200/month (VpnGw1 SKU)
+- **Storage Account**: Pay-per-use (very low for testing)
+- **Private Endpoint**: ~$7/month
+- **Data Transfer**: Minimal for VPN traffic
+
+Consider using **VpnGw1AZ** for production with availability zones, or explore **Virtual WAN** for multiple sites.
