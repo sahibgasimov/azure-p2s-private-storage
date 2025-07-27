@@ -6,9 +6,9 @@ This guide walks through creating a completely private Azure File Share accessib
 
 1. **Azure CLI** installed and authenticated (`az login`)
 2. **Terraform** installed (version 1.5.5+)
-3. **PowerShell** (Windows) for certificate generation
-4. **Azure subscription** with appropriate permissions
-   
+
+<img width="799" height="164" alt="image" src="https://github.com/user-attachments/assets/f29f0d69-dbb4-417a-bb13-23f17847e891" />
+
 <img width="1319" height="518" alt="image" src="https://github.com/user-attachments/assets/d53d4cf6-ec9d-4e1a-b09c-66fbc9c4a484" />
 
 ## Step-by-Step Deployment
