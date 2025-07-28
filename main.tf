@@ -169,7 +169,7 @@ resource "azurerm_virtual_network_gateway" "main" {
     vpn_auth_types       = ["AAD"]
 
    
-    aad_tenant   = "https://login.microsoftonline.com/${data.azurerm_client_config.current.tenant_id}/"
+    aad_tenant   = "https://login.microsoftonline.com/${data.azurerm_client_config.current.tenant_id}"
     aad_audience = "41b23e61-6c1e-4545-b367-cd054e0ed4b4" # Azure VPN Client App ID
     aad_issuer   = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
   }
