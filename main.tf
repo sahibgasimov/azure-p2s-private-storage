@@ -5,6 +5,7 @@ terraform {
       version = "~>3.0"
     }
   }
+  required_version = "~> 1.5.5"
 }
 
 provider "azurerm" {
@@ -58,7 +59,7 @@ resource "azurerm_storage_account" "main" {
   account_replication_type = "LRS"
 
   # TEMPORARILY enable public access during creation to avoid 403 errors
-  public_network_access_enabled = true
+  public_network_access_enabled = false
 
   # Enable large file shares if needed
   large_file_share_enabled = true
@@ -73,7 +74,7 @@ resource "azurerm_storage_account" "main" {
 resource "azurerm_storage_share" "main" {
   name                 = var.file_share_name
   storage_account_name = azurerm_storage_account.main.name
-  quota                = 100 # GB
+  quota                = 10 # GB
 
   depends_on = [azurerm_storage_account.main]
 }
