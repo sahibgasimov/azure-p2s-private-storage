@@ -164,6 +164,7 @@ resource "azurerm_virtual_network_gateway" "main" {
     address_space = var.vpn_client_address_space
 
     # Use OpenVPN with Azure AD Authentication
+    #https://learn.microsoft.com/en-us/answers/questions/1195225/azure-p2s-vpn-connection-through-azure-vpn-client
     vpn_client_protocols = ["OpenVPN"]
     vpn_auth_types       = ["AAD"]
 
