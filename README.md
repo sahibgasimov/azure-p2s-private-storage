@@ -1,7 +1,48 @@
-# Azure Private File Share with P2S VPN - Deployment Guide
+# Azure Private File Share with Point-to-Site VPN + DNS Resolver Deployment.
 <img width="673" height="302" alt="image" src="https://github.com/user-attachments/assets/057e3558-5c9a-49f0-bc60-aa7499ae4596" />
 
-This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection with Terraform. The setup includes a storage account with private endpoint, and Point-to-Site VPN access.
+This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection with Terraform. In short, the goal is to be able connecting from On-Premise environment with  
+
+### Key Components in Your Architecture:
+1. VNet Structure (10.0.0.0/16):
+
+DNS Subnet (10.0.3.0/24) - Contains DNS Private Resolver
+Storage Subnet (10.0.1.0/24) - Contains Private Endpoint
+Gateway Subnet (10.0.2.0/24) - Contains VPN Gateway
+
+2. DNS Private Resolver (10.0.3.4):
+
+Inbound endpoint for VPN clients to query
+Forwards DNS queries to Azure DNS and Private DNS Zone
+Key component that makes domain names work
+
+3. Private Endpoint (10.0.1.4):
+
+Private IP for storage account access
+Automatically registered in Private DNS Zone
+Direct connection to storage account
+
+4. Private DNS Zone:
+
+Maps domain to private IP: mystorageaccount → 10.0.1.4
+Linked to VNet for automatic resolution
+Works with DNS Private Resolver
+
+Connection Flow:
+
+Azure AD authentication through VPN
+DNS queries go to Private DNS Resolver (10.0.3.4)
+Resolver checks Private DNS Zone
+Returns private IP (10.0.1.4)
+Traffic flows through VPN to Private Endpoint
+
+🔒 Security Benefits:
+
+Zero public internet exposure
+Azure AD authentication
+Private DNS resolution
+Encrypted VPN tunnel
+Network ACLs protection
 
 ## Prerequisites
 
