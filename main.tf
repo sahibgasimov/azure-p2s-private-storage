@@ -1,3 +1,8 @@
+provider "azurerm" {
+
+  features {}
+}
+
 terraform {
   required_providers {
     azurerm = {
@@ -8,20 +13,17 @@ terraform {
   required_version = "~> 1.5.5"
 }
 
-provider "azurerm" {
-  features {}
-}
 
 data "azurerm_client_config" "current" {}
 
 
-# Create Resource Group
+# Resource Group
 resource "azurerm_resource_group" "main" {
   name     = var.resource_group_name
   location = var.location
 }
 
-# Create Virtual Network
+# Virtual Network
 resource "azurerm_virtual_network" "main" {
   name                = "vnet-filestorage"
   address_space       = ["10.0.0.0/16"]
@@ -29,7 +31,7 @@ resource "azurerm_virtual_network" "main" {
   resource_group_name = azurerm_resource_group.main.name
 }
 
-# Create subnet for storage private endpoint
+# subnet for storage private endpoint
 resource "azurerm_subnet" "storage" {
   name                 = "subnet-storage"
   resource_group_name  = azurerm_resource_group.main.name
@@ -39,7 +41,7 @@ resource "azurerm_subnet" "storage" {
   service_endpoints = ["Microsoft.Storage"]
 }
 
-# Create Gateway Subnet for VPN Gateway
+# Gateway Subnet for VPN Gateway
 resource "azurerm_subnet" "gateway" {
   name                 = "GatewaySubnet"
   resource_group_name  = azurerm_resource_group.main.name
@@ -50,7 +52,7 @@ resource "azurerm_subnet" "gateway" {
 }
 
 
-# Create Storage Account
+# Storage Account
 resource "azurerm_storage_account" "main" {
   name                     = var.storage_account_name
   resource_group_name      = azurerm_resource_group.main.name
@@ -58,26 +60,17 @@ resource "azurerm_storage_account" "main" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-  # TEMPORARILY enable public access during creation to avoid 403 errors
   public_network_access_enabled = false
-
-  # Enable large file shares if needed
-  large_file_share_enabled = true
+ 
+  large_file_share_enabled = false
 
   tags = {
-    environment = "production"
+    owner = "sahib"
     purpose     = "private-file-storage"
   }
 }
 
-# Create File Share
-resource "azurerm_storage_share" "main" {
-  name                 = var.file_share_name
-  storage_account_name = azurerm_storage_account.main.name
-  quota                = 10 # GB
 
-  depends_on = [azurerm_storage_account.main]
-}
 
 # Network rules to secure storage account after private endpoint is created
 resource "azurerm_storage_account_network_rules" "main" {
@@ -94,11 +87,10 @@ resource "azurerm_storage_account_network_rules" "main" {
 
   depends_on = [
     azurerm_private_endpoint.storage,
-    azurerm_storage_share.main
   ]
 }
 
-# Create Private DNS Zone for Storage
+# Private DNS Zone for Storage
 resource "azurerm_private_dns_zone" "storage" {
   name                = "privatelink.file.core.windows.net"
   resource_group_name = azurerm_resource_group.main.name
@@ -113,7 +105,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "storage" {
   registration_enabled  = false
 }
 
-# Create Private Endpoint for Storage Account
+# Private Endpoint for Storage Account
 resource "azurerm_private_endpoint" "storage" {
   name                = "pe-storage"
   location            = azurerm_resource_group.main.location
@@ -133,7 +125,7 @@ resource "azurerm_private_endpoint" "storage" {
   }
 }
 
-# Create Public IP for VPN Gateway
+# Public IP for VPN Gateway
 resource "azurerm_public_ip" "vpn_gateway" {
   name                = "pip-vpn-gateway"
   location            = azurerm_resource_group.main.location
@@ -142,7 +134,7 @@ resource "azurerm_public_ip" "vpn_gateway" {
   sku                 = "Standard"
 }
 
-# Create VPN Gateway with Azure AD Authentication
+# VPN Gateway with Azure AD Authentication
 resource "azurerm_virtual_network_gateway" "main" {
   name                = "vpn-gateway"
   location            = azurerm_resource_group.main.location
