@@ -1,4 +1,3 @@
-# Variables
 variable "resource_group_name" {
   description = "Name of the resource group"
   default     = "rg-filestorage"
@@ -10,8 +9,8 @@ variable "location" {
 }
 
 variable "storage_account_name" {
-  description = "Storage account name (must be globally unique)"
-  default     = "yourstorageaccount001" # Change this to something unique
+  description = "Storage account name
+  default     = "mystorageaccount20s250727" 
 }
 
 variable "file_share_name" {
