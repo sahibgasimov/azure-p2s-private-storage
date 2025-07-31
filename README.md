@@ -1,9 +1,9 @@
-# Azure Private File Share with Point-to-Site VPN + DNS Resolver Deployment.
+# Azure Private File Share with Point-to-Site VPN and DNS Resolver Deployment.
 <img width="673" height="302" alt="image" src="https://github.com/user-attachments/assets/057e3558-5c9a-49f0-bc60-aa7499ae4596" />
 
-This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection with Terraform. In short, the goal is to be able connecting from On-Premise environment with  
+This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection with Terraform. In short, my goal was to be able securely connect from my On-Premise Proxmox environment to my Azure environment with VPN and being able to resolve Azure private DNS.  
 
-### Key Components in Your Architecture:
+### Key Components in this Architecture:
 1. VNet Structure (10.0.0.0/16):
 
 DNS Subnet (10.0.3.0/24) - Contains DNS Private Resolver
@@ -36,7 +36,7 @@ Resolver checks Private DNS Zone
 Returns private IP (10.0.1.4)
 Traffic flows through VPN to Private Endpoint
 
-🔒 Security Benefits:
+Security Best Practicies:
 
 Zero public internet exposure
 Azure AD authentication
