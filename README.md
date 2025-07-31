@@ -75,7 +75,7 @@ cd azure-private-fileshare
 Save the provided files:
 - `main.tf` (main Terraform configuration)
 - `terraform.tfvars` (variables configuration)
-
+```
 ### 2. Configure Variables
 
 Edit `terraform.tfvars` file:
@@ -84,12 +84,11 @@ Edit `terraform.tfvars` file:
 resource_group_name = "rg-filestorage"
 location           = "Central US"
 
-# IMPORTANT: Change this to something globally unique!
+# IMPORTANT: Change storage account name to something globally unique.
 storage_account_name = "mystorageaccount20250727"
 
 file_share_name = "myfileshare"
 vpn_client_address_space = ["172.16.0.0/24"]
-
 ```
 
 ### 3. Deploy Infrastructure
@@ -98,9 +97,7 @@ Initialize and deploy with Terraform:
 
 ```bash
 terraform init
-
 terraform plan
-
 terraform apply
 ```
 
