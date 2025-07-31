@@ -30,11 +30,11 @@ Works with DNS Private Resolver
 
 Connection Flow:
 
-Azure AD authentication through VPN
+Azure AD authentication through Azure VPN
 DNS queries go to Private DNS Resolver (10.0.3.4)
 Resolver checks Private DNS Zone
 Returns private IP (10.0.1.4)
-Traffic flows through VPN to Private Endpoint
+Traffic flows through Azure VPN to Private Endpoint
 
 Security Best Practicies:
 
