@@ -116,7 +116,7 @@ terraform output
 
 # You should see private IPs for storage account
 terraform output storage_account_private_endpoint_ip
-
+```
 **Note**: The VPN Gateway creation takes 20-45 minutes. Be patient!
 
 ### 5. Download VPN Client Configuration
@@ -130,12 +130,12 @@ After deployment completes:
 5. Extract the ZIP file
 6. Import config file to your azure vpn
 
-```
+
 <img width="464" height="268" alt="image" src="https://github.com/user-attachments/assets/94901f74-e975-4774-94e4-a36c5bafa435" />
 
 <img width="461" height="216" alt="image" src="https://github.com/user-attachments/assets/af2ecdfc-f969-4ba5-aaef-e459aff1375d" />
 
-```
+
 ### 6. Connect and Test
 
 1. **Connect to VPN**: Use the installed VPN client to connect
@@ -171,26 +171,6 @@ net use Z: \\yourstorageaccount.privatelink.file.core.windows.net\myfileshare /u
    
 <img width="8322" height="496" alt="image" src="https://github.com/user-attachments/assets/95cd0ff3-cdf6-42eb-8a0b-d43c30366f56" />
 
-## Troubleshooting
-
-### Common Issues:
-
-1. **Storage account name not unique**: Change `storage_account_name` in tfvars
-2. **Can't access file share**: Verify VPN connection and DNS resolution
-3. **Permission denied**: Check storage account access key is correct
-
-### Useful Commands:
-
-```bash
-# Check Terraform outputs
-terraform output
-
-# Get storage account key
-terraform output -raw storage_account_key
-
-# Destroy infrastructure (when done testing)
-terraform destroy
-```
 
 
 ## Cost Considerations
@@ -199,5 +179,3 @@ terraform destroy
 - **Storage Account**: Pay-per-use (very low for testing)
 - **Private Endpoint**: ~$7/month
 - **Data Transfer**: Minimal for VPN traffic
-
-Consider using **VpnGw1AZ** for production with availability zones, or explore **Virtual WAN** for multiple sites.
