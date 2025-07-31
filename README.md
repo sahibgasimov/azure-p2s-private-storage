@@ -1,67 +1,76 @@
-# Azure Private File Share with Point-to-Site VPN and DNS Resolver Deployment.
-<img width="673" height="302" alt="image" src="https://github.com/user-attachments/assets/057e3558-5c9a-49f0-bc60-aa7499ae4596" />
+# Azure Private File Share with Point-to-Site VPN and DNS Resolver Deployment
 
-This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection with Terraform. In short, my goal was to be able securely connect from my On-Premise Proxmox (it can be any local environment on your site) Windows servers to the file share in my Azure environment with Azure VPN and being able to resolve Azure private DNS.   
+![Architecture](https://github.com/user-attachments/assets/057e3558-5c9a-49f0-bc60-aa7499ae4596)
 
-### Key Components in this Architecture:
-1. VNet Structure (10.0.0.0/16):
+This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection using Terraform.  
+In short, my goal was to securely connect from my on-premise Proxmox Domain Controller to the Azure file share resolving DNS name. This setup can work with any local environment at your site, but it requires Windows server that can configure a DNS conditional forwarder to resolve Azure private DNS via the VPN connection.
 
-DNS Subnet (10.0.3.0/24) - Contains DNS Private Resolver
-Storage Subnet (10.0.1.0/24) - Contains Private Endpoint
-Gateway Subnet (10.0.2.0/24) - Contains VPN Gateway
+---
 
-2. DNS Private Resolver (10.0.3.4):
+## Architecture Overview
 
-Inbound endpoint for VPN clients to query
-Forwards DNS queries to Azure DNS and Private DNS Zone
-Key component that makes domain names work
+### Key Components
 
-3. Private Endpoint (10.0.1.4):
+1. **Virtual Network (10.0.0.0/16)**  
+   - DNS Subnet (10.0.3.0/24) – Contains DNS Private Resolver  
+   - Storage Subnet (10.0.1.0/24) – Contains Private Endpoint  
+   - Gateway Subnet (10.0.2.0/24) – Contains VPN Gateway  
 
-Private IP for storage account access
-Automatically registered in Private DNS Zone
-Direct connection to storage account
+2. **DNS Private Resolver (10.0.3.4)**  
+   - Inbound endpoint for VPN clients to query  
+   - Forwards DNS queries to Azure DNS and Private DNS Zone  
+   - Enables internal domain name resolution  
 
-4. Private DNS Zone:
+3. **Private Endpoint (10.0.1.4)**  
+   - Private IP for storage account access  
+   - Automatically registered in Private DNS Zone  
+   - Direct connection to the storage account  
 
-Maps domain to private IP: mystorageaccount -> 10.0.1.4
-Linked to VNet for automatic resolution
-Works with DNS Private Resolver
+4. **Private DNS Zone**  
+   - Maps storage domain to private IP (10.0.1.4)  
+   - Linked to VNet for automatic resolution  
 
-Connection Flow:
+---
 
-Azure AD authentication through Azure VPN
-DNS queries go to Private DNS Resolver (10.0.3.4)
-Resolver checks Private DNS Zone
-Returns private IP (10.0.1.4)
-Traffic flows through Azure VPN to Private Endpoint
+## Connection Flow
 
-Security Best Practicies:
+1. VPN client authenticates via Azure AD  
+2. DNS queries go to the Private DNS Resolver (10.0.3.4)  
+3. Resolver checks the Private DNS Zone  
+4. Returns the private IP (10.0.1.4)  
+5. Traffic flows through Azure VPN to the Private Endpoint  
 
-Zero public internet exposure
-Azure AD authentication
-Private DNS resolution
-Encrypted VPN tunnel
-Network ACLs protection
+---
+
+## Security Best Practices
+
+- No public internet exposure  
+- Azure AD authentication  
+- Private DNS resolution  
+- Encrypted VPN tunnel  
+- Network ACLs protection  
+
+---
 
 ## Prerequisites
 
-1. **Azure CLI** installed and authenticated (`az login`) assuming you already have necessary permission to create these resources. 
-2. **Terraform** installed (version 1.5.5+)
+1. Azure CLI installed and authenticated (`az login`)  
+2. Terraform installed (version 1.5.5+)  
+3. Permissions to create networking and storage resources  
 
-<img width="799" height="164" alt="image" src="https://github.com/user-attachments/assets/f29f0d69-dbb4-417a-bb13-23f17847e891" />
+![Setup](https://github.com/user-attachments/assets/4416431d-aa4a-4ba5-ac86-ca0e6cf41d9a)  
+![DNS Flow](https://github.com/user-attachments/assets/dbc1b0a3-eddb-4989-a34f-54c5eabdf12a)  
 
-<img width="699" height="464" alt="image" src="https://github.com/user-attachments/assets/531c0e11-8ea8-49ab-bcd0-0b31adbd2fe3" />
+---
 
 ## Step-by-Step Deployment
 
 ### 1. Prepare the Terraform Files
 
-Create a new directory and save all the Terraform files:
 ```bash
 mkdir azure-private-fileshare
 cd azure-private-fileshare
-```
+
 
 Save the provided files:
 - `main.tf` (main Terraform configuration)
@@ -152,7 +161,6 @@ terraform output -raw storage_account_key
 # Mount the drive (replace with your storage account name and key)
 net use Z: \\yourstorageaccount.privatelink.file.core.windows.net\myfileshare /user:Azure\yourstorageaccount YOUR_STORAGE_KEY /persistent:yes
 ```
-<img width="2384" height="196" alt="image" src="https://github.com/user-attachments/assets/381ec4e2-d738-42e0-9dbb-4b75c294d403" />
 
 ## Verification Steps
 
@@ -184,13 +192,6 @@ terraform output -raw storage_account_key
 terraform destroy
 ```
 
-## Security Notes
-
--  Storage account has public access disabled
--  All traffic goes through private endpoint
--  VPN connection is certificate-authenticated
--  DNS resolves to private IP addresses
--  No internet exposure of file share
 
 ## Cost Considerations
 
