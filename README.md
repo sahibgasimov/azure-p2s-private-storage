@@ -1,4 +1,4 @@
-# Azure Private File Share with Point-to-Site VPN and DNS Resolver Deployment
+# Azure Private File Share with Point-to-Site VPN and Inbound DNS Resolver.
 
 ![Diagram Name](./p2s-diagram.svg)
 
