@@ -1,6 +1,6 @@
 # Azure Private File Share with Point-to-Site VPN and Inbound DNS Resolver.
 
-![Diagram Name](./p2s-diagram.svg)
+![Diagram Name](./docs/p2s-diagram.svg)
 
 This guide walks through creating a completely private Azure File Share accessible only through a secure VPN connection using Terraform.  
 In short, my goal was to securely connect from my on-premise Proxmox Domain Controller to the Azure file share resolving DNS name. This setup can work with any local environment at your site, but it requires Windows server that can configure a DNS conditional forwarder to resolve Azure private DNS via the VPN connection.
