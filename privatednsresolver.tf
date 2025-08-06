@@ -4,7 +4,11 @@ resource "azurerm_private_dns_resolver" "main" {
   location            = azurerm_resource_group.main.location
   virtual_network_id  = azurerm_virtual_network.main.id
 
-  depends_on = [azurerm_virtual_network.main]
+  depends_on = [
+    azurerm_virtual_network.main,
+    azurerm_virtual_network_gateway.main,
+    azurerm_subnet.dns
+  ]
 }
 
 # Inbound endpoint for VPN clients to query
@@ -33,5 +37,11 @@ resource "azurerm_subnet" "dns" {
       name    = "Microsoft.Network/dnsResolvers"
     }
   }
+    timeouts {
+    create = "60m"
+    delete = "60m"
+  }
+    depends_on = [azurerm_virtual_network_gateway.main]
+
 }
 
