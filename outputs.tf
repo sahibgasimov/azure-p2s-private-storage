@@ -17,6 +17,7 @@ output "storage_account_id" {
 output "storage_account_key" {
   description = "The primary key of the storage account"
   value       = azurerm_storage_account.main.primary_access_key
+  sensitive = true
 }
 
 output "file_share_name" {
