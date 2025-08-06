@@ -56,7 +56,7 @@ In short, my goal was to securely connect from my on-premise Proxmox Domain Cont
 
 1. Azure CLI installed and authenticated (`az login`)  
 2. Terraform installed (version 1.5.5+)  
-3. Permissions to create networking and storage resources  
+3. Permissions to create networking and storage resources (make sure your user or service principal has Storage File Data SMB Share Contributor role)
 
 ![Setup](https://github.com/user-attachments/assets/4416431d-aa4a-4ba5-ac86-ca0e6cf41d9a)  
 ![DNS Flow](https://github.com/user-attachments/assets/dbc1b0a3-eddb-4989-a34f-54c5eabdf12a)  

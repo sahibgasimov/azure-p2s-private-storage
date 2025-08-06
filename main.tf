@@ -70,11 +70,6 @@ resource "azurerm_storage_account" "main" {
   }
 }
 
-resource "azurerm_storage_share" "main" {
-  name                 = var.file_share_name
-  storage_account_name = azurerm_storage_account.main.name
-  quota                = 1
-}
 
 # Network rules to secure storage account after private endpoint is created
 resource "azurerm_storage_account_network_rules" "main" {
