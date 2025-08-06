@@ -9,7 +9,7 @@ variable "location" {
 }
 
 variable "storage_account_name" {
-  description = "Storage account name
+  description = "Storage account name"
   default     = "mystorageaccount20s250727" 
 }
 
